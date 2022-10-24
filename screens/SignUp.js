@@ -3,6 +3,8 @@ import React from "react";
 import { styles } from "../GloabalStylesheet";
 import { Formik } from "formik";
 import CustomButton from "../components/CustomButton";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUp({ navigation }) {
   return (
@@ -25,7 +27,32 @@ export default function SignUp({ navigation }) {
             phone: "",
           }}
           onSubmit={(values, { resetForm }) => {
-            console.log(values);
+            axios({
+              method: "post",
+              url: "https://ab3b-105-178-48-241.eu.ngrok.io/api/signup",
+              data: {
+                name: values.name,
+                password: values.password,
+                phone: values.phone,
+                email: values.email,
+              },
+            })
+              .then((response) => {
+                if (response.status === 201) {
+                  const storeData = async () => {
+                    try {
+                      let JSONvalue = JSON.stringify(response.data.user);
+                      await AsyncStorage.setItem("@user", JSONvalue);
+                      await AsyncStorage.setItem("@token", response.data.token);
+                      navigation.navigate("Home");
+                    } catch (e) {
+                      console.log(e);
+                    }
+                  };
+                  storeData();
+                }
+              })
+              .catch((e) => console.log(e));
           }}
         >
           {({
@@ -61,6 +88,7 @@ export default function SignUp({ navigation }) {
                 onBlur={handleBlur("password")}
                 value={values.password}
                 placeholder="********"
+                secureTextEntry={true}
                 style={{
                   borderBottomWidth: 0.7,
                   width: 250,

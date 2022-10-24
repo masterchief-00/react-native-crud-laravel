@@ -28,9 +28,9 @@ export default function Update({ navigation, route }) {
             weight: route.params.weight,
           }}
           onSubmit={(values, { resetForm }) => {
-            let URL = `https://d75f-41-186-41-97.eu.ngrok.io/api/items/${route.params.id}`;
-            axios
-              .put({
+            let URL = ` https://ab3b-105-178-48-241.eu.ngrok.io/api/items/${route.params.id}`;
+            axios({
+                method:'put',
                 url: URL,
                 data: {
                   name: values.name,

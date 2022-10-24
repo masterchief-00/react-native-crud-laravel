@@ -6,6 +6,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { styles } from "../GloabalStylesheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Dashboard({ navigation, route }) {
   const [items, setItems] = useState([]);
@@ -19,21 +20,51 @@ export default function Dashboard({ navigation, route }) {
     setSelectedItem(ModalResult[0]);
   };
 
-  const handleDelete = async (id) => {
-    let URL = `https://d75f-41-186-41-97.eu.ngrok.io/api/items/${id}`;
-    await axios
-      .delete({
-        url: URL,
+  const cleanUp = () => {
+    setToken("");
+    // setItems("");
+    setUserData("");
+  };
+
+  const handleLogout = () => {
+    axios({
+      method: "post",
+      url: "https://ab3b-105-178-48-241.eu.ngrok.io/api/logout",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        console.log(response.data);
+        if (response.status === 200) {
+          navigation.navigate("Login");
+          cleanUp();
+        }
       })
-      .then((response) => console.log(response.data))
       .catch((e) => console.log(e));
   };
+
+  const handleDelete = async (id) => {
+    let URL = "https://ab3b-105-178-48-241.eu.ngrok.io/api/items/" + id;
+    await axios({
+      method: "delete",
+      url: URL,
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        if (response.data === 1) {
+          let newItems = items.filter((item) => item.id !== selectedItem.id);
+          setItems(newItems);
+        }
+      })
+      .catch((e) => console.log(e));
+  };
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const fetchItems = async () => {
       axios({
         method: "get",
-        url: "https://d75f-41-186-41-97.eu.ngrok.io/api/items",
+        url: "https://ab3b-105-178-48-241.eu.ngrok.io/api/items",
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((response) => setItems(response.data))
@@ -47,14 +78,15 @@ export default function Dashboard({ navigation, route }) {
         let user = JSONvalue != null ? JSON.parse(JSONvalue) : null;
         setUserData(user);
         setToken(tokenGenerated);
-        console.log(token);
       } catch (e) {
         console.log(e);
       }
     };
-    getData();
-    fetchItems();
-  }, []);
+    if (isFocused) {
+      getData();
+      fetchItems();
+    }
+  }, [isFocused]);
 
   const [modalVisible, setModalVisible] = useState(false);
   return (
@@ -73,6 +105,13 @@ export default function Dashboard({ navigation, route }) {
         <Text style={{ fontWeight: "bold", fontSize: 18 }}>
           Hi, {userData.name}
         </Text>
+        <CustomButton
+          bg="black"
+          text="LOGOUT"
+          width={100}
+          iconName="back"
+          onPress={handleLogout}
+        />
       </View>
       <View style={styles.boxContainer}>
         <View

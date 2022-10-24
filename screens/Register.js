@@ -44,7 +44,7 @@ export default function Register({ navigation }) {
           onSubmit={(values, { resetForm }) => {
             axios({
               method: "post",
-              url: "https://d75f-41-186-41-97.eu.ngrok.io/api/items",
+              url: " https://ab3b-105-178-48-241.eu.ngrok.io/api/items",
               data: {
                 name: values.name,
                 color: values.color,
@@ -53,7 +53,9 @@ export default function Register({ navigation }) {
               },
               headers: { Authorization: `Bearer ${token}` },
             })
-              .then((response) => console.log(response.status))
+              .then((response) => {
+                resetForm();
+              })
               .catch((error) => console.log(error));
           }}
         >

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "react-native-crud-laravel",
+    "name": "CRUD Operations with Laravel",
     "slug": "react-native-crud-laravel",
     "version": "1.0.0",
     "orientation": "portrait",

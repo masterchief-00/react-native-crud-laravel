@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
           onSubmit={(values, { resetForm }) => {
             axios({
               method: "post",
-              url: "https://d75f-41-186-41-97.eu.ngrok.io/api/login",
+              url: " https://ab3b-105-178-48-241.eu.ngrok.io/api/login",
               data: {
                 email: values.email,
                 password: values.password,
